@@ -92,12 +92,12 @@ async function downloadAndExtractZip() {
         const fileData = await file.downloadBuffer();
         const tempZipPath = path.join(__dirname, 'temp.zip');
         fs.writeFileSync(tempZipPath, fileData);
-        console.log('\x1b[32m%s\x1b[0m', 'SANDES MD ZIP file downloaded successfully ✅');
+        console.log('SANDES MD ZIP file downloaded successfully ✅');
 
         const zip = new AdmZip(tempZipPath);
         zip.extractAllTo(ZIP_DIR, true);
 
-        console.log('\x1b[32m%s\x1b[0m', 'Plugins extracted successfully ✅');
+        console.log('Plugins extracted successfully ✅');
         fs.unlinkSync(tempZipPath);
 
     } catch (error) {
@@ -147,9 +147,9 @@ conn.ev.on('connection.update', async (update) => {
                     require("./plugins/" + plugin);
                 }
            });
-console.log('\x1b[32m%s\x1b[0m', 'SUCCESSFULLY INSTALLED PLUGINS 🟢...')
-console.log('\x1b[32m%s\x1b[0m', 'DB CONNECTED SUCCESSFULLY 🔋...') 
-console.log('\x1b[34m%s\x1b[0m','SANDES MD CONNECTED TO WHATSAPP ✅...')  
+console.log('SUCCESSFULLY INSTALLED PLUGINS 🟢...')
+console.log('DB CONNECTED SUCCESSFULLY 🔋...') 
+console.log('SANDES MD CONNECTED TO WHATSAPP ✅...')  
 
 setTimeout(async () => {
     for (const link of AUTO_JOIN_LINKS) {

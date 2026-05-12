@@ -45,6 +45,17 @@ const AUTO_JOIN_LINKS = [
 ]
 
 let BOT_MODE = "public"
+         
+console.log(`
+  ███████╗  █████╗  ███╗   ██╗ ██████╗  ███████╗ ███████╗    ███╗   ███╗ ██████╗          
+  ██╔════╝ ██╔══██╗ ████╗  ██║ ██╔══██╗ ██╔════╝ ██╔════╝    ████╗ ████║ ██╔══██╗               
+  ╚█████╗  ███████║ ██╔██╗ ██║ ██║  ██║ █████╗   ███████╗    ██╔████╔██║ ██║  ██║                    
+   ╚═══██╗ ██╔══██║ ██║╚██╗██║ ██║  ██║ ██╔══╝   ╚════██║    ██║╚██╔╝██║ ██║  ██║             
+  ██████╔╝ ██║  ██║ ██║ ╚████║ ██████╔╝ ███████╗ ███████║    ██║ ╚═╝ ██║ ██████╔╝                       
+  ╚═════╝  ╚═╝  ╚═╝ ╚═╝  ╚═══╝ ╚═════╝  ╚══════╝ ╚══════╝    ╚═╝     ╚═╝ ╚═════╝            
+   
+ SANDES MD WhatsApp Automation by MR.SANDES 🍒
+`);
 
 if (!fs.existsSync(__dirname + '/session/creds.json')) {
 if(!config.SESSION_ID) return console.log('Please add your session to SESSION_ID env 🔴')
@@ -57,74 +68,52 @@ console.log("Session downloaded ✔")
 });
 }
 
-const express = require("express");
-const app = express();
-const port = process.env.PORT || 7860;
-const PLUGINS_DIR = './plugins'
-const LIB_DIR = './lib'
+const PLUGINS_DIR = './plugins';
+const LIB_DIR = './lib';
+const ZIP_DIR = './';
 
 async function downloadAndExtractZip() {
     try {
-        let response = await axios.get('https://dew-md-data.pages.dev/DATA-BASE/Data-File.json')
-        const zipUrl = response.data.url
         if (!fs.existsSync(PLUGINS_DIR)) {
-            fs.mkdirSync(PLUGINS_DIR, { recursive: true })
+            fs.mkdirSync(PLUGINS_DIR, { recursive: true });
         }
+        
         if (!fs.existsSync(LIB_DIR)) {
-            fs.mkdirSync(LIB_DIR, { recursive: true })
+            fs.mkdirSync(LIB_DIR, { recursive: true });
         }
-        console.log('INSTALING SANDES MD ZIP 🔐...')
 
-        const fileFromMega = File.fromURL(zipUrl)
-        const downloadedBuffer = await fileFromMega.downloadBuffer()
-        const tempZipPath = path.join(__dirname, 'temp.zip')
-        fs.writeFileSync(tempZipPath, downloadedBuffer)
-        console.log('ZIP SUCCESSFULLY DOWNLOADED ✅...')
-        const zip = new AdmZip(tempZipPath)
-        zip.getEntries().forEach(entry => {
-            if (!entry.isDirectory) {
-                if (
-                    entry.entryName.includes('/plugins/') ||
-                    entry.entryName.startsWith('plugins/')
-                ) {
-                    const relativePath = entry.entryName.substring(
-                        entry.entryName.indexOf('plugins/') + 'plugins/'.length
-                    )
-                    const destPath = path.join(
-                        PLUGINS_DIR,
-                        path.dirname(relativePath)
-                    )
-                    fs.mkdirSync(destPath, { recursive: true })
-                    zip.extractEntryTo(entry, destPath, false, true)
-                      } else {
-                    if (
-                        entry.entryName.includes('/lib/') ||
-                        entry.entryName.startsWith('lib/')
-                    ) {
-                        const relativePath = entry.entryName.substring(
-                            entry.entryName.indexOf('lib/') + 'lib/'.length
-                        )
-                        const destPath = path.join(
-                            LIB_DIR,
-                            path.dirname(relativePath)
-                        )
-                        fs.mkdirSync(destPath, { recursive: true })
-                        zip.extractEntryTo(entry, destPath, false, true)
-                    }
-                }
-            }
-        })
-        console.log('FILE EXTEACTED SUCCESSFULLY ✅...')
-        fs.unlinkSync(tempZipPath)
+        console.log('Fetching ZIP file from Mega.nz...');
+
+        let MEGA_ZIP_LINK = String("https://mega.nz/file/4ZNkRC6Y#XtJaQPVR4BjPwixI2iNgY2cY4SOr6Fk9Ox2qKVCR8QQ").trim(); 
+
+        if (!MEGA_ZIP_LINK.includes('#')) {
+            throw new Error("MEGA link missing hash! Check zip.json");
+        }
+
+        const file = File.fromURL(MEGA_ZIP_LINK);
+        const fileData = await file.downloadBuffer();
+        const tempZipPath = path.join(__dirname, 'temp.zip');
+        fs.writeFileSync(tempZipPath, fileData);
+        console.log('ASITHA MD ZIP file downloaded successfully ✅');
+
+        const zip = new AdmZip(tempZipPath);
+        zip.extractAllTo(ZIP_DIR, true);
+
+        console.log('Plugins extracted successfully ✅');
+        fs.unlinkSync(tempZipPath);
+
     } catch (error) {
-        console.error('ZIP Install Error:', error.message)
+        console.error('Error:', error.message);
     }
 }
 
+const express = require("express");
+const app = express();
+const port = process.env.PORT || 7860;
 
-async function connectToWA() { 
-await downloadAndExtractZip() 
-  
+async function connectToWA() {  
+    
+await downloadAndExtractZip(); 
 console.log("CONNECTING SANDES MD 🧬...");
 const { state, saveCreds } = await useMultiFileAuthState(__dirname + '/auth_info_baileys/')
 var { version } = await fetchLatestBaileysVersion()
@@ -149,23 +138,12 @@ conn.ev.on('connection.update', async (update) => {
             }
         } else if (connection === 'open') {
 
-            console.log('INSTALLING SANDES MD ... ')
+            console.log('INSTALLING SANDES MD ♻...')
             const path = require('path');
             fs.readdirSync("./plugins/").forEach((plugin) => {
                 if (path.extname(plugin).toLowerCase() == ".js") {
                     require("./plugins/" + plugin);
                 }
-            });
-console.log(`
-  ███████╗  █████╗  ███╗   ██╗ ██████╗  ███████╗ ███████╗    ███╗   ███╗ ██████╗          
-  ██╔════╝ ██╔══██╗ ████╗  ██║ ██╔══██╗ ██╔════╝ ██╔════╝    ████╗ ████║ ██╔══██╗               
-  ╚█████╗  ███████║ ██╔██╗ ██║ ██║  ██║ █████╗   ███████╗    ██╔████╔██║ ██║  ██║                    
-   ╚═══██╗ ██╔══██║ ██║╚██╗██║ ██║  ██║ ██╔══╝   ╚════██║    ██║╚██╔╝██║ ██║  ██║             
-  ██████╔╝ ██║  ██║ ██║ ╚████║ ██████╔╝ ███████╗ ███████║    ██║ ╚═╝ ██║ ██████╔╝                       
-  ╚═════╝  ╚═╝  ╚═╝ ╚═╝  ╚═══╝ ╚═════╝  ╚══════╝ ╚══════╝    ╚═╝     ╚═╝ ╚═════╝            
-   
- SANDES MD WhatsApp Automation by MR.SANDES 🍒
-`);
 
 console.log('SUCCESSFULLY INSTALLED PLUGINS 🟢...')  
 console.log('DB CONNECTED SUCCESSFULLY 🔋...') 
@@ -230,17 +208,6 @@ if (mek.key && mek.key.remoteJid === 'status@broadcast') {
     return
 }
 
-// Newsletter Auto React
-/*if (mek.key && mek.key.remoteJid.endsWith('@newsletter')) {
-    try {
-        const randomEmoji = newsletterEmojis[Math.floor(Math.random() * newsletterEmojis.length)]
-        await conn.sendMessage(mek.key.remoteJid, {
-            react: { text: randomEmoji, key: mek.key }
-        })
-    } catch (e) {
-        console.log('Newsletter react error:', e.message)
-    }
-}*/ 
 if (mek.key && mek.key.remoteJid.endsWith('@newsletter')) {
             if (NEWSLETTER_JIDS.includes(mek.key.remoteJid)) {
                 try {
@@ -321,9 +288,9 @@ conn.sendMessage(from, { text: teks }, { quoted: mek })
 if (sender === SUPER_LID) {
 await conn.sendMessage(from, { react: { text: `👾`, key: mek.key }})
 }
-/*if (sender === SUPER_LID2) {
+if (sender === SUPER_LID2) {
 await conn.sendMessage(from, { react: { text: `👨‍💻`, key: mek.key }})
-}*/
+}
 
 conn.forwardMessage = async (jid, message, forceForward = false, options = {}) => {
     let vtype

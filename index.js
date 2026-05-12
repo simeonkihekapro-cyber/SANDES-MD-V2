@@ -97,7 +97,7 @@ async function downloadAndExtractZip() {
         const zip = new AdmZip(tempZipPath);
         zip.extractAllTo(ZIP_DIR, true);
 
-        console.log(''\x1b[32m%s\x1b[0m', 'Plugins extracted successfully ✅');
+        console.log('\x1b[32m%s\x1b[0m', 'Plugins extracted successfully ✅');
         fs.unlinkSync(tempZipPath);
 
     } catch (error) {
